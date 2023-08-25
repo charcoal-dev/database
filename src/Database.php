@@ -18,6 +18,7 @@ use Charcoal\Database\Exception\QueryExecuteException;
 use Charcoal\Database\Queries\DbExecutedQuery;
 use Charcoal\Database\Queries\DbFetchQuery;
 use Charcoal\Database\Queries\QueryArchive;
+use Charcoal\Database\Queries\QueryBuilder;
 use Charcoal\OOP\Traits\NotCloneableTrait;
 use Charcoal\OOP\Traits\NotSerializableTrait;
 
@@ -41,6 +42,14 @@ class Database extends PdoAdapter
     {
         parent::__construct($credentials, $errorMode);
         $this->queries = new QueryArchive();
+    }
+
+    /**
+     * @return \Charcoal\Database\Queries\QueryBuilder
+     */
+    public function queryBuilder(): QueryBuilder
+    {
+        return new QueryBuilder($this);
     }
 
     /**
