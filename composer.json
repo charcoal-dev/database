@@ -1,0 +1,29 @@
+{
+  "name": "charcoal-dev/database",
+  "description": "Database lib for Charcoal Apps",
+  "type": "library",
+  "homepage": "https://github.com/charcoal-dev/database",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Furqan A. Siddiqui",
+      "email": "hello@furqansiddiqui.com",
+      "homepage": "https://www.furqansiddiqui.com",
+      "role": "Author"
+    }
+  ],
+  "require": {
+    "php": "^8.1",
+    "ext-pdo": "*",
+    "charcoal-dev/oop-base": "dev-main",
+    "charcoal-dev/events-base": "dev-main"
+  },
+  "autoload": {
+    "psr-4": {
+      "Charcoal\\Database\\": [
+        "src"
+      ]
+    }
+  },
+  "minimum-stability": "dev"
+}
