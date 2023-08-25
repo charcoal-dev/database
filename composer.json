@@ -15,8 +15,7 @@
   "require": {
     "php": "^8.1",
     "ext-pdo": "*",
-    "charcoal-dev/oop-base": "dev-main",
-    "charcoal-dev/events-base": "dev-main"
+    "charcoal-dev/oop-base": "dev-main"
   },
   "autoload": {
     "psr-4": {
