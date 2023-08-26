@@ -234,30 +234,17 @@ class QueryBuilder
     }
 
     /**
-     * @param string ...$cols
+     * @param \Charcoal\Database\Queries\SortFlag $flag
+     * @param string ...$columns
      * @return $this
      */
-    public function sortAsc(string ...$cols): static
+    public function sort(SortFlag $flag, string ...$columns): static
     {
-        $cols = array_map(function ($col) {
-            return sprintf('`%1$s`', trim($col));
-        }, $cols);
+        $columns = array_map(function ($column) {
+            return sprintf('`%1$s`', trim($column));
+        }, $columns);
 
-        $this->selectOrder = sprintf(" ORDER BY %s ASC", trim(implode(",", $cols), ", "));
-        return $this;
-    }
-
-    /**
-     * @param string ...$cols
-     * @return $this
-     */
-    public function sortDesc(string ...$cols): static
-    {
-        $cols = array_map(function ($col) {
-            return sprintf('`%1$s`', trim($col));
-        }, $cols);
-
-        $this->selectOrder = sprintf(" ORDER BY %s DESC", trim(implode(",", $cols), ", "));
+        $this->selectOrder = sprintf(" ORDER BY %s %s", trim(implode(",", $columns), ", "), $flag->name);
         return $this;
     }
 
