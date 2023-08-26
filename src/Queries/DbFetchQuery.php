@@ -41,8 +41,9 @@ class DbFetchQuery
     }
 
     /**
-     * Alias of next() method
+     * Alias of getNext() method
      * @return array|null
+     * @throws \Charcoal\Database\Exception\QueryFetchException
      */
     public function row(): ?array
     {
@@ -52,29 +53,33 @@ class DbFetchQuery
     /**
      * Returns next row
      * @return array|null
+     * @throws \Charcoal\Database\Exception\QueryFetchException
      */
     public function getNext(): ?array
     {
-        $rows = $this->stmt->fetch(\PDO::FETCH_ASSOC);
-        if (!is_array($rows)) {
-            return null;
+        try {
+            $row = $this->stmt->fetch(\PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            throw new QueryFetchException($this->query, $e->getMessage(), previous: $e);
         }
 
-        return $rows;
+        return is_array($row) ? $row : null;
     }
 
     /**
+     * Returns all rows from
      * @return array
      * @throws \Charcoal\Database\Exception\QueryFetchException
      */
     public function getAll(): array
     {
-        $rows = $this->stmt->fetchAll(\PDO::FETCH_ASSOC);
-        /** @noinspection PhpConditionAlreadyCheckedInspection */
-        if (!is_array($rows)) {
-            throw new QueryFetchException($this->query, 'Failed to fetch rows from executed query');
+        try {
+            $rows = $this->stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            throw new QueryFetchException($this->query, $e->getMessage(), previous: $e);
         }
 
-        return $rows;
+        /** @noinspection PhpConditionAlreadyCheckedInspection */
+        return is_array($rows) ? $rows : [];
     }
 }
