@@ -43,7 +43,7 @@ class DbCredentials
         public bool              $persistent = false
     )
     {
-        if (!in_array($this->driver, \PDO::getAvailableDrivers())) {
+        if (!in_array($this->driver->value, \PDO::getAvailableDrivers())) {
             throw new \OutOfBoundsException('Database driver is not supported in PDO build');
         }
     }
