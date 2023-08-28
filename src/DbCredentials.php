@@ -44,7 +44,7 @@ class DbCredentials
     )
     {
         if (!in_array($this->driver, \PDO::getAvailableDrivers())) {
-            throw new \OutOfBoundsException('Database driver is not support PDO');
+            throw new \OutOfBoundsException('Database driver is not supported in PDO build');
         }
     }
 
