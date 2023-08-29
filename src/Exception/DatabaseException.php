@@ -26,6 +26,6 @@ class DatabaseException extends \Exception
      */
     public static function fromPdoException(\PDOException $e): static
     {
-        return new static($e->getMessage(), $e->getCode(), previous: $e);
+        return new static($e->getMessage(), intval($e->getCode()), previous: $e);
     }
 }

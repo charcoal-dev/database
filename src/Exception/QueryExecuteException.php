@@ -27,9 +27,9 @@ class QueryExecuteException extends DbQueryException
         public readonly array    $boundData,
         public readonly PdoError $error,
         string                   $message = "",
-        int                      $code = 0,
+        int|string               $code = 0,
         ?\Throwable              $previous = null)
     {
-        parent::__construct($message, $code, $previous);
+        parent::__construct($message, intval($code), $previous);
     }
 }
