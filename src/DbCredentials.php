@@ -39,7 +39,7 @@ class DbCredentials
         public readonly string   $host = "localhost",
         public readonly ?int     $port = null,
         public readonly ?string  $username = null,
-        public readonly ?string  $password = null,
+        public ?string           $password = null,
         public bool              $persistent = false
     )
     {
