@@ -58,7 +58,7 @@ class DbCredentials
         }
 
         switch ($this->driver) {
-            case "sqlite":
+            case DbDriver::SQLITE:
                 return sprintf('sqlite:%s', $this->dbName);
             default:
                 $port = $this->port ? "port=" . $this->port . ";" : "";
