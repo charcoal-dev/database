@@ -25,10 +25,10 @@ class QueryArchive implements \IteratorAggregate
 
     /**
      * Appends an executed query into archive
-     * @param \Charcoal\Database\Queries\DbExecutedQuery $query
+     * @param \Charcoal\Database\Queries\DbExecutedQuery|\Charcoal\Database\Queries\DbFailedQuery $query
      * @return void
      */
-    public function append(DbExecutedQuery $query): void
+    public function append(DbExecutedQuery|DbFailedQuery $query): void
     {
         $this->queries[] = $query;
         $this->count++;

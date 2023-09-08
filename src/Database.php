@@ -16,6 +16,7 @@ namespace Charcoal\Database;
 
 use Charcoal\Database\Exception\QueryExecuteException;
 use Charcoal\Database\Queries\DbExecutedQuery;
+use Charcoal\Database\Queries\DbFailedQuery;
 use Charcoal\Database\Queries\DbFetchQuery;
 use Charcoal\Database\Queries\QueryArchive;
 use Charcoal\Database\Queries\QueryBuilder;
@@ -84,14 +85,19 @@ class Database extends PdoAdapter
     private function queryExec(string $queryStr, array $data, bool $fetchQuery): DbExecutedQuery|DbFetchQuery
     {
         try {
-            $stmt = $this->queryPrepareStatement($queryStr);
-            $this->queryBindParams($stmt, $queryStr, $data);
-            $query = new DbExecutedQuery($stmt, $queryStr, $data);
-        } catch (\PDOException $e) {
-            throw new QueryExecuteException($queryStr, $data, new PdoError($e), $e->getMessage(), $e->getCode(), $e);
+            try {
+                $stmt = $this->queryPrepareStatement($queryStr);
+                $this->queryBindParams($stmt, $queryStr, $data);
+                $query = new DbExecutedQuery($stmt, $queryStr, $data);
+            } catch (\PDOException $e) {
+                throw new QueryExecuteException($queryStr, $data, new PdoError($e), $e->getMessage(), $e->getCode(), $e);
+            }
+        } catch (QueryExecuteException $e) {
+            $this->queries->append(new DbFailedQuery($e)); // Append failed query to log
+            throw $e;
         }
 
-        $this->queries->append($query);
+        $this->queries->append($query); // Append successful query to log
         return $fetchQuery ? new DbFetchQuery($query, $stmt) : $query;
     }
 
