@@ -21,6 +21,7 @@ namespace Charcoal\Database\Queries;
 class QueryArchive implements \IteratorAggregate
 {
     private array $queries = [];
+    private int $count = 0;
 
     /**
      * Appends an executed query into archive
@@ -30,6 +31,24 @@ class QueryArchive implements \IteratorAggregate
     public function append(DbExecutedQuery $query): void
     {
         $this->queries[] = $query;
+        $this->count++;
+    }
+
+    /**
+     * @return int
+     */
+    public function count(): int
+    {
+        return $this->count;
+    }
+
+    /**
+     * @return void
+     */
+    public function flush(): void
+    {
+        $this->queries = [];
+        $this->count = 0;
     }
 
     /**
