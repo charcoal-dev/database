@@ -29,8 +29,8 @@ class QueryBuilder
     private string $whereClause = "1";
     /** @var string */
     private string $selectColumns = "*";
-    /** @var bool */
-    private bool $selectLock = false;
+    /** @var \Charcoal\Database\Queries\LockFlag|null */
+    private ?LockFlag $selectLock = null;
     /** @var string */
     private string $selectOrder = "";
     /** @var int|null */
@@ -154,7 +154,7 @@ class QueryBuilder
             $this->whereClause,
             $this->selectOrder,
             $limitClause,
-            $this->selectLock ? " FOR UPDATE" : ""
+            $this->selectLock ? " " . $this->selectLock->getQueryPart($this->db->credentials->driver) : ""
         );
 
         // Fetch
@@ -227,9 +227,9 @@ class QueryBuilder
      *
      * @return $this
      */
-    public function lock(): static
+    public function lock(LockFlag $flag = LockFlag::FOR_UPDATE): static
     {
-        $this->selectLock = true;
+        $this->selectLock = $flag;
         return $this;
     }
 
