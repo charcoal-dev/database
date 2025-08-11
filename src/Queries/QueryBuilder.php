@@ -128,15 +128,13 @@ class QueryBuilder
         }
 
         // Query
-        $query = sprintf(
-            "SELECT" . " %s FROM `%s` WHERE %s%s%s%s",
+        $query = sprintf("SELECT" . " %s FROM `%s` WHERE %s%s%s%s",
             $this->selectColumns,
             $this->tableName,
             $this->whereClause,
             $this->selectOrder,
             $limitClause,
-            $this->selectLock ? " " . $this->selectLock->getQueryPart($this->db->credentials->driver) : ""
-        );
+            $this->selectLock ? " " . $this->selectLock->getQueryPart($this->db->credentials->driver) : "");
 
         // Fetch
         return $this->db->fetch($query, $this->queryData);
