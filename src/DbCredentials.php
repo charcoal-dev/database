@@ -33,7 +33,7 @@ class DbCredentials
     )
     {
         if (!in_array($this->driver->value, \PDO::getAvailableDrivers())) {
-            throw new \OutOfBoundsException('Database driver is not supported in PDO build');
+            throw new \OutOfBoundsException("Database driver is not supported in PDO build");
         }
     }
 
@@ -43,7 +43,7 @@ class DbCredentials
     public function dsn(): string
     {
         if (!$this->dbName) {
-            throw new \UnexpectedValueException('Cannot get DSN; Database name is not set');
+            throw new \UnexpectedValueException("Cannot get DSN; Database name is not set");
         }
 
         switch ($this->driver) {

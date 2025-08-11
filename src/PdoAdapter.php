@@ -1,13 +1,7 @@
 <?php
 /*
- * This file is a part of "charcoal-dev/database" package.
- * https://github.com/charcoal-dev/database
- *
- * Copyright (c) Furqan A. Siddiqui <hello@furqansiddiqui.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code or visit following link:
- * https://github.com/charcoal-dev/database/blob/main/LICENSE
+ * Part of the "charcoal-dev/database" package.
+ * @link https://github.com/charcoal-dev/database
  */
 
 declare(strict_types=1);
@@ -40,10 +34,11 @@ abstract class PdoAdapter
         }
 
         try {
-            $this->pdo = new \PDO($credentials->dsn(), $credentials->username, $credentials->password, $options);
+            $this->pdo = new \PDO($credentials->dsn(), $credentials->username,
+                $credentials->password, $options);
         } catch (\PDOException $e) {
             // Connection is not established unless PERSISTENT mode is set
-            throw new DbConnectionException('Failed to establish DB connection', previous: $e);
+            throw new DbConnectionException("Failed to establish DB connection", previous: $e);
         }
     }
 
@@ -82,7 +77,7 @@ abstract class PdoAdapter
         try {
             $lastInsertId = $this->pdo->lastInsertId($seq);
             if (!$lastInsertId) {
-                throw new DbQueryException('Failed to retrieve last inserted id');
+                throw new DbQueryException("Failed to retrieve last inserted id");
             }
 
             return $lastInsertId;
@@ -112,7 +107,7 @@ abstract class PdoAdapter
     {
         try {
             if (!$this->pdo->beginTransaction()) {
-                throw new DbTransactionException('Failed to begin database transaction');
+                throw new DbTransactionException("Failed to begin database transaction");
             }
         } catch (\PDOException $e) {
             throw DbTransactionException::fromPdoException($e);
@@ -127,7 +122,7 @@ abstract class PdoAdapter
     {
         try {
             if (!$this->pdo->rollBack()) {
-                throw new DbTransactionException('Failed to roll back transaction');
+                throw new DbTransactionException("Failed to roll back transaction");
             }
         } catch (\PDOException $e) {
             throw DbTransactionException::fromPdoException($e);
@@ -142,7 +137,7 @@ abstract class PdoAdapter
     {
         try {
             if (!$this->pdo->commit()) {
-                throw new DbTransactionException('Failed to commit transaction');
+                throw new DbTransactionException("Failed to commit transaction");
             }
         } catch (\PDOException $e) {
             throw DbTransactionException::fromPdoException($e);
