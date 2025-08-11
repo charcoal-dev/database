@@ -1,20 +1,15 @@
 <?php
 /*
- * This file is a part of "charcoal-dev/database" package.
- * https://github.com/charcoal-dev/database
- *
- * Copyright (c) Furqan A. Siddiqui <hello@furqansiddiqui.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code or visit following link:
- * https://github.com/charcoal-dev/database/blob/main/LICENSE
+ * Part of the "charcoal-dev/database" package.
+ * @link https://github.com/charcoal-dev/database
  */
 
 declare(strict_types=1);
 
 namespace Charcoal\Database;
 
-use Charcoal\OOP\Traits\NoDumpTrait;
+use Charcoal\Base\Traits\NoDumpTrait;
+use Charcoal\Database\Enums\DbDriver;
 
 /**
  * Class DbCredentials
@@ -24,21 +19,15 @@ class DbCredentials
 {
     use NoDumpTrait;
 
-    /**
-     * @param \Charcoal\Database\DbDriver $driver
-     * @param string $dbName
-     * @param string $host
-     * @param int|null $port
-     * @param string|null $username
-     * @param string|null $password
-     * @param bool $persistent
-     */
     public function __construct(
         public readonly DbDriver $driver,
         public readonly string   $dbName,
+        #[\SensitiveParameter]
         public readonly string   $host = "localhost",
         public readonly ?int     $port = null,
+        #[\SensitiveParameter]
         public readonly ?string  $username = null,
+        #[\SensitiveParameter]
         public ?string           $password = null,
         public bool              $persistent = false
     )
@@ -59,16 +48,14 @@ class DbCredentials
 
         switch ($this->driver) {
             case DbDriver::SQLITE:
-                return sprintf('sqlite:%s', $this->dbName);
+                return sprintf("sqlite:%s", $this->dbName);
             default:
                 $port = $this->port ? "port=" . $this->port . ";" : "";
-                return sprintf(
-                    '%s:host=%s;%sdbname=%s;charset=utf8mb4',
+                return sprintf("%s:host=%s;%sdbname=%s;charset=utf8mb4",
                     $this->driver->value,
                     $this->host,
                     $port,
-                    $this->dbName
-                );
+                    $this->dbName);
         }
     }
 }
