@@ -1,27 +1,21 @@
 <?php
 /*
- * This file is a part of "charcoal-dev/database" package.
- * https://github.com/charcoal-dev/database
- *
- * Copyright (c) Furqan A. Siddiqui <hello@furqansiddiqui.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code or visit following link:
- * https://github.com/charcoal-dev/database/blob/main/LICENSE
+ * Part of the "charcoal-dev/database" package.
+ * @link https://github.com/charcoal-dev/database
  */
 
 declare(strict_types=1);
 
 namespace Charcoal\Database;
 
+use Charcoal\Base\Traits\NotCloneableTrait;
+use Charcoal\Base\Traits\NotSerializableTrait;
 use Charcoal\Database\Exception\QueryExecuteException;
-use Charcoal\Database\Queries\DbExecutedQuery;
-use Charcoal\Database\Queries\DbFailedQuery;
-use Charcoal\Database\Queries\DbFetchQuery;
+use Charcoal\Database\Queries\ExecutedQuery;
+use Charcoal\Database\Queries\FailedQuery;
+use Charcoal\Database\Queries\FetchQuery;
 use Charcoal\Database\Queries\QueryArchive;
 use Charcoal\Database\Queries\QueryBuilder;
-use Charcoal\OOP\Traits\NotCloneableTrait;
-use Charcoal\OOP\Traits\NotSerializableTrait;
 
 /**
  * Class Database
@@ -56,10 +50,10 @@ class Database extends PdoAdapter
     /**
      * @param string $query
      * @param array $data
-     * @return \Charcoal\Database\Queries\DbExecutedQuery
+     * @return \Charcoal\Database\Queries\ExecutedQuery
      * @throws \Charcoal\Database\Exception\QueryExecuteException
      */
-    public function exec(string $query, array $data = []): DbExecutedQuery
+    public function exec(string $query, array $data = []): ExecutedQuery
     {
         return $this->queryExec($query, $data, false);
     }
@@ -67,10 +61,10 @@ class Database extends PdoAdapter
     /**
      * @param string $query
      * @param array $data
-     * @return \Charcoal\Database\Queries\DbFetchQuery
+     * @return \Charcoal\Database\Queries\FetchQuery
      * @throws \Charcoal\Database\Exception\QueryExecuteException
      */
-    public function fetch(string $query, array $data = []): DbFetchQuery
+    public function fetch(string $query, array $data = []): FetchQuery
     {
         return $this->queryExec($query, $data, true);
     }
@@ -79,26 +73,26 @@ class Database extends PdoAdapter
      * @param string $queryStr
      * @param array $data
      * @param bool $fetchQuery
-     * @return \Charcoal\Database\Queries\DbExecutedQuery|\Charcoal\Database\Queries\DbFetchQuery
+     * @return \Charcoal\Database\Queries\ExecutedQuery|\Charcoal\Database\Queries\FetchQuery
      * @throws \Charcoal\Database\Exception\QueryExecuteException
      */
-    private function queryExec(string $queryStr, array $data, bool $fetchQuery): DbExecutedQuery|DbFetchQuery
+    private function queryExec(string $queryStr, array $data, bool $fetchQuery): ExecutedQuery|FetchQuery
     {
         try {
             try {
                 $stmt = $this->queryPrepareStatement($queryStr);
                 $this->queryBindParams($stmt, $queryStr, $data);
-                $query = new DbExecutedQuery($stmt, $queryStr, $data);
+                $query = new ExecutedQuery($stmt, $queryStr, $data);
             } catch (\PDOException $e) {
                 throw new QueryExecuteException($queryStr, $data, new PdoError($e), $e->getMessage(), $e->getCode(), $e);
             }
         } catch (QueryExecuteException $e) {
-            $this->queries->append(new DbFailedQuery($e)); // Append failed query to log
+            $this->queries->append(new FailedQuery($e)); // Append failed query to log
             throw $e;
         }
 
         $this->queries->append($query); // Append successful query to log
-        return $fetchQuery ? new DbFetchQuery($query, $stmt) : $query;
+        return $fetchQuery ? new FetchQuery($query, $stmt) : $query;
     }
 
     /**
@@ -111,7 +105,7 @@ class Database extends PdoAdapter
     {
         $stmt = $this->pdo->prepare($queryStr);
         if (!$stmt) {
-            throw new QueryExecuteException($queryStr, [], new PdoError($stmt), 'Failed to prepare PDO statement');
+            throw new QueryExecuteException($queryStr, [], new PdoError($stmt), "Failed to prepare PDO statement");
         }
 
         return $stmt;
@@ -135,7 +129,7 @@ class Database extends PdoAdapter
                     "integer" => \PDO::PARAM_INT,
                     "NULL" => \PDO::PARAM_NULL,
                     "string", "double" => \PDO::PARAM_STR,
-                    default => throw new \LogicException('Cannot bind value of type ' . gettype($value))
+                    default => throw new \LogicException("Cannot bind value of type " . gettype($value))
                 };
 
                 if (is_int($key)) {
@@ -144,7 +138,7 @@ class Database extends PdoAdapter
 
                 if (!$stmt->bindValue($key, $value, $type)) {
                     throw new \LogicException(
-                        sprintf('Failed to bind value of type "%s" to key "%s"', gettype($value), $key)
+                        sprintf('Failed to bind value of type " % s" to key " % s"', gettype($value), $key)
                     );
                 }
             }
