@@ -14,7 +14,7 @@ use Charcoal\Database\Exception\QueryExecuteException;
 use Charcoal\Database\Queries\ExecutedQuery;
 use Charcoal\Database\Queries\FailedQuery;
 use Charcoal\Database\Queries\FetchQuery;
-use Charcoal\Database\Queries\QueryArchive;
+use Charcoal\Database\Queries\QueryLog;
 use Charcoal\Database\Queries\QueryBuilder;
 
 /**
@@ -23,7 +23,7 @@ use Charcoal\Database\Queries\QueryBuilder;
  */
 class Database extends PdoAdapter
 {
-    public readonly QueryArchive $queries;
+    public readonly QueryLog $queries;
 
     use NotSerializableTrait;
     use NotCloneableTrait;
@@ -36,11 +36,11 @@ class Database extends PdoAdapter
     public function __construct(DbCredentials $credentials, int $errorMode = \PDO::ERRMODE_EXCEPTION)
     {
         parent::__construct($credentials, $errorMode);
-        $this->queries = new QueryArchive();
+        $this->queries = new QueryLog();
     }
 
     /**
-     * @return \Charcoal\Database\Queries\QueryBuilder
+     * @return QueryBuilder
      */
     public function queryBuilder(): QueryBuilder
     {
@@ -48,10 +48,7 @@ class Database extends PdoAdapter
     }
 
     /**
-     * @param string $query
-     * @param array $data
-     * @return \Charcoal\Database\Queries\ExecutedQuery
-     * @throws \Charcoal\Database\Exception\QueryExecuteException
+     * @throws QueryExecuteException
      */
     public function exec(string $query, array $data = []): ExecutedQuery
     {
@@ -59,10 +56,7 @@ class Database extends PdoAdapter
     }
 
     /**
-     * @param string $query
-     * @param array $data
-     * @return \Charcoal\Database\Queries\FetchQuery
-     * @throws \Charcoal\Database\Exception\QueryExecuteException
+     * @throws QueryExecuteException
      */
     public function fetch(string $query, array $data = []): FetchQuery
     {
@@ -70,11 +64,7 @@ class Database extends PdoAdapter
     }
 
     /**
-     * @param string $queryStr
-     * @param array $data
-     * @param bool $fetchQuery
-     * @return \Charcoal\Database\Queries\ExecutedQuery|\Charcoal\Database\Queries\FetchQuery
-     * @throws \Charcoal\Database\Exception\QueryExecuteException
+     * @throws QueryExecuteException
      */
     private function queryExec(string $queryStr, array $data, bool $fetchQuery): ExecutedQuery|FetchQuery
     {
@@ -96,9 +86,7 @@ class Database extends PdoAdapter
     }
 
     /**
-     * @param string $queryStr
-     * @return \PDOStatement
-     * @throws \Charcoal\Database\Exception\QueryExecuteException
+     * @throws QueryExecuteException
      * @throws \PDOException
      */
     private function queryPrepareStatement(string $queryStr): \PDOStatement
@@ -112,11 +100,7 @@ class Database extends PdoAdapter
     }
 
     /**
-     * @param \PDOStatement $stmt
-     * @param string $queryStr
-     * @param array $data
-     * @return void
-     * @throws \Charcoal\Database\Exception\QueryExecuteException
+     * @throws QueryExecuteException
      * @throws \PDOException
      */
     private function queryBindParams(\PDOStatement $stmt, string $queryStr, array $data): void
@@ -138,7 +122,7 @@ class Database extends PdoAdapter
 
                 if (!$stmt->bindValue($key, $value, $type)) {
                     throw new \LogicException(
-                        sprintf('Failed to bind value of type " % s" to key " % s"', gettype($value), $key)
+                        sprintf('Failed to bind value of type "%s" to key "%s"', gettype($value), $key)
                     );
                 }
             }
