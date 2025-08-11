@@ -1,41 +1,35 @@
 <?php
 /*
- * This file is a part of "charcoal-dev/database" package.
- * https://github.com/charcoal-dev/database
- *
- * Copyright (c) Furqan A. Siddiqui <hello@furqansiddiqui.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code or visit following link:
- * https://github.com/charcoal-dev/database/blob/main/LICENSE
+ * Part of the "charcoal-dev/database" package.
+ * @link https://github.com/charcoal-dev/database
  */
 
 declare(strict_types=1);
 
 namespace Charcoal\Database\Queries;
 
+use Charcoal\Base\Traits\NoDumpTrait;
+use Charcoal\Base\Traits\NotCloneableTrait;
+use Charcoal\Base\Traits\NotSerializableTrait;
 use Charcoal\Database\Exception\QueryFetchException;
-use Charcoal\OOP\Traits\NoDumpTrait;
-use Charcoal\OOP\Traits\NotCloneableTrait;
-use Charcoal\OOP\Traits\NotSerializableTrait;
 
 /**
- * Class DbFetchQuery
+ * Class FetchQuery
  * @package Charcoal\Database\Queries
  */
-class DbFetchQuery
+class FetchQuery
 {
     use NoDumpTrait;
     use NotCloneableTrait;
     use NotSerializableTrait;
 
     /**
-     * @param \Charcoal\Database\Queries\DbExecutedQuery $query
+     * @param \Charcoal\Database\Queries\ExecutedQuery $query
      * @param \PDOStatement $stmt
      */
     public function __construct(
-        public readonly DbExecutedQuery $query,
-        private readonly \PDOStatement  $stmt,
+        public readonly ExecutedQuery  $query,
+        private readonly \PDOStatement $stmt,
     )
     {
     }
