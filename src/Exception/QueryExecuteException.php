@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\Database\Exception;
 
-use Charcoal\Database\PdoError;
+use Charcoal\Database\Pdo\PdoError;
 
 /**
  * Class QueryExecuteException

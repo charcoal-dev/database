@@ -7,7 +7,7 @@
 namespace Charcoal\Database\Queries;
 
 use Charcoal\Database\Exception\QueryExecuteException;
-use Charcoal\Database\PdoError;
+use Charcoal\Database\Pdo\PdoError;
 
 /**
  * Class FailedQuery

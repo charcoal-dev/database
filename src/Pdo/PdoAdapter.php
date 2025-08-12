@@ -6,15 +6,16 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\Database;
+namespace Charcoal\Database\Pdo;
 
+use Charcoal\Database\DbCredentials;
 use Charcoal\Database\Exception\DbConnectionException;
 use Charcoal\Database\Exception\DbQueryException;
 use Charcoal\Database\Exception\DbTransactionException;
 
 /**
  * Class PdoAdapter
- * @package Charcoal\Database
+ * @package Charcoal\Database\Pdo
  */
 abstract class PdoAdapter
 {

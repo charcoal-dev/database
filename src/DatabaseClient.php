@@ -11,17 +11,19 @@ namespace Charcoal\Database;
 use Charcoal\Base\Traits\NotCloneableTrait;
 use Charcoal\Base\Traits\NotSerializableTrait;
 use Charcoal\Database\Exception\QueryExecuteException;
+use Charcoal\Database\Pdo\PdoAdapter;
+use Charcoal\Database\Pdo\PdoError;
 use Charcoal\Database\Queries\ExecutedQuery;
 use Charcoal\Database\Queries\FailedQuery;
 use Charcoal\Database\Queries\FetchQuery;
-use Charcoal\Database\Queries\QueryLog;
 use Charcoal\Database\Queries\QueryBuilder;
+use Charcoal\Database\Queries\QueryLog;
 
 /**
  * Class Database
  * @package Charcoal\Database
  */
-class Database extends PdoAdapter
+class DatabaseClient extends PdoAdapter
 {
     public readonly QueryLog $queries;
 
@@ -29,8 +31,6 @@ class Database extends PdoAdapter
     use NotCloneableTrait;
 
     /**
-     * @param \Charcoal\Database\DbCredentials $credentials
-     * @param int $errorMode
      * @throws \Charcoal\Database\Exception\DbConnectionException
      */
     public function __construct(DbCredentials $credentials, int $errorMode = \PDO::ERRMODE_EXCEPTION)
@@ -131,4 +131,3 @@ class Database extends PdoAdapter
         }
     }
 }
-

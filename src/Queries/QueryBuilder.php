@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Charcoal\Database\Queries;
 
 use Charcoal\Base\Enums\Sort;
-use Charcoal\Database\Database;
+use Charcoal\Database\DatabaseClient;
 use Charcoal\Database\Enums\LockFlag;
 use Charcoal\Database\Exception\QueryBuilderException;
 
@@ -28,7 +28,7 @@ class QueryBuilder
     private ?int $selectLimit = null;
     private array $queryData = [];
 
-    public function __construct(private readonly Database $db)
+    public function __construct(private readonly DatabaseClient $db)
     {
     }
 

@@ -6,11 +6,11 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\Database;
+namespace Charcoal\Database\Pdo;
 
 /**
  * Class PdoError
- * @package Charcoal\Database
+ * @package Charcoal\Database\Pdo
  */
 readonly class PdoError implements \Stringable
 {
