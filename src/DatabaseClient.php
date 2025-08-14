@@ -8,6 +8,8 @@ declare(strict_types=1);
 
 namespace Charcoal\Database;
 
+use Charcoal\Base\Contracts\Storage\StorageProviderInterface;
+use Charcoal\Base\Enums\StorageType;
 use Charcoal\Base\Traits\NotCloneableTrait;
 use Charcoal\Base\Traits\NotSerializableTrait;
 use Charcoal\Database\Events\DbEvents;
@@ -25,7 +27,7 @@ use Charcoal\Database\Queries\QueryLog;
  * Class Database
  * @package Charcoal\Database
  */
-class DatabaseClient extends PdoAdapter
+class DatabaseClient extends PdoAdapter implements StorageProviderInterface
 {
     public readonly QueryLog $queries;
     private readonly DbEvents $events;
@@ -194,5 +196,24 @@ class DatabaseClient extends PdoAdapter
         } catch (\LogicException $e) {
             throw new QueryExecuteException($queryStr, $data, new PdoError($stmt), $e->getMessage());
         }
+    }
+
+    /**
+     * @return StorageType
+     */
+    public function storageType(): StorageType
+    {
+        return StorageType::DATABASE;
+    }
+
+    /**
+     * @return string
+     */
+    public function storageProviderId(): string
+    {
+        return strtolower(sprintf("%s_%s_%s",
+            $this->credentials->driver->value,
+            $this->credentials->host,
+            $this->credentials->dbName));
     }
 }
