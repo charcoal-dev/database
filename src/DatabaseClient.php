@@ -10,6 +10,7 @@ namespace Charcoal\Database;
 
 use Charcoal\Base\Traits\NotCloneableTrait;
 use Charcoal\Base\Traits\NotSerializableTrait;
+use Charcoal\Database\Events\DbEvents;
 use Charcoal\Database\Exception\DbConnectionException;
 use Charcoal\Database\Exception\QueryExecuteException;
 use Charcoal\Database\Pdo\PdoAdapter;
@@ -27,6 +28,7 @@ use Charcoal\Database\Queries\QueryLog;
 class DatabaseClient extends PdoAdapter
 {
     public readonly QueryLog $queries;
+    private readonly DbEvents $events;
 
     use NotSerializableTrait;
     use NotCloneableTrait;
@@ -34,16 +36,64 @@ class DatabaseClient extends PdoAdapter
     /**
      * @param DbCredentials $credentials
      * @param int $errorMode
-     * @throws Exception\DbConnectionException
+     * @param bool $serializeEvents
+     * @param bool $serializeQueries
+     * @throws DbConnectionException
      */
     public function __construct(
         #[\SensitiveParameter]
         DbCredentials $credentials,
-        int           $errorMode = \PDO::ERRMODE_EXCEPTION
+        int           $errorMode = \PDO::ERRMODE_EXCEPTION,
+        public bool   $serializeEvents = true,
+        public bool   $serializeQueries = false,
     )
     {
         parent::__construct($credentials, $errorMode);
         $this->queries = new QueryLog();
+        $this->events = new DbEvents();
+    }
+
+    /**
+     * @return array
+     */
+    protected function collectSerializableData(): array
+    {
+        $data = parent::collectSerializableData();
+        $data["serializeEvents"] = $this->serializeEvents;
+        $data["serializeQueries"] = $this->serializeQueries;
+        $data["events"] = isset($this->events) && $this->serializeEvents ?
+            $this->events : null;
+        $data["queries"] = isset($this->queries) && $this->serializeQueries ?
+            $this->queries : null;
+        return $data;
+    }
+
+    /**
+     * @param array $data
+     * @return void
+     * @throws DbConnectionException
+     */
+    public function __unserialize(array $data): void
+    {
+        $this->serializeEvents = $data["serializeEvents"];
+        $this->serializeQueries = $data["serializeQueries"];
+        if ($this->serializeEvents && $data["events"]) {
+            $this->events = $data["events"];
+        }
+
+        if ($this->serializeQueries && $data["queries"]) {
+            $this->queries = $data["queries"];
+        }
+
+        if (!isset($this->events)) {
+            $this->events = new DbEvents();
+        }
+
+        if (!isset($this->queries)) {
+            $this->queries = new QueryLog();
+        }
+
+        parent::__unserialize($data);
     }
 
     /**

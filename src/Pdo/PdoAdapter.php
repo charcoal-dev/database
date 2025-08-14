@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\Database\Pdo;
 
+use Charcoal\Base\Traits\ControlledSerializableTrait;
 use Charcoal\Database\DbCredentials;
 use Charcoal\Database\Enums\DbConnectionStrategy;
 use Charcoal\Database\Exception\DbConnectionException;
@@ -20,6 +21,8 @@ use Charcoal\Database\Exception\DbTransactionException;
  */
 abstract class PdoAdapter
 {
+    use ControlledSerializableTrait;
+
     /** @var \PDO|null */
     protected ?\PDO $pdo = null;
 
@@ -34,7 +37,36 @@ abstract class PdoAdapter
         protected readonly int        $errorMode
     )
     {
-        // Establish connection is not Lazy strategy
+        // Establish connection if not "Lazy" strategy
+        if ($this->credentials->strategy !== DbConnectionStrategy::Lazy) {
+            $this->isConnected();
+        }
+    }
+
+    /**
+     * @return array
+     */
+    protected function collectSerializableData(): array
+    {
+        return [
+            "pdo" => null,
+            "credentials" => $this->credentials,
+            "errorMode" => $this->errorMode,
+        ];
+    }
+
+    /**
+     * @param array $data
+     * @return void
+     * @throws DbConnectionException
+     */
+    public function __unserialize(array $data): void
+    {
+        $this->pdo = null;
+        $this->credentials = $data["credentials"];
+        $this->errorMode = $data["errorMode"];
+
+        // Establish connection if not "Lazy" strategy
         if ($this->credentials->strategy !== DbConnectionStrategy::Lazy) {
             $this->isConnected();
         }
