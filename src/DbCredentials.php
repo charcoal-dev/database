@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Charcoal\Database;
 
 use Charcoal\Base\Traits\NoDumpTrait;
+use Charcoal\Database\Enums\DbConnectionStrategy;
 use Charcoal\Database\Enums\DbDriver;
 
 /**
@@ -20,16 +21,16 @@ class DbCredentials
     use NoDumpTrait;
 
     public function __construct(
-        public readonly DbDriver $driver,
-        public readonly string   $dbName,
+        public readonly DbDriver             $driver,
+        public readonly string               $dbName,
         #[\SensitiveParameter]
-        public readonly string   $host = "localhost",
-        public readonly ?int     $port = null,
+        public readonly string               $host = "localhost",
+        public readonly ?int                 $port = null,
         #[\SensitiveParameter]
-        public readonly ?string  $username = null,
+        public readonly ?string              $username = null,
         #[\SensitiveParameter]
-        public ?string           $password = null,
-        public bool              $persistent = false
+        public ?string                       $password = null,
+        public readonly DbConnectionStrategy $strategy = DbConnectionStrategy::Lazy,
     )
     {
         if (!in_array($this->driver->value, \PDO::getAvailableDrivers())) {

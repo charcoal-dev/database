@@ -10,6 +10,7 @@ namespace Charcoal\Database;
 
 use Charcoal\Base\Traits\NotCloneableTrait;
 use Charcoal\Base\Traits\NotSerializableTrait;
+use Charcoal\Database\Exception\DbConnectionException;
 use Charcoal\Database\Exception\QueryExecuteException;
 use Charcoal\Database\Pdo\PdoAdapter;
 use Charcoal\Database\Pdo\PdoError;
@@ -31,9 +32,15 @@ class DatabaseClient extends PdoAdapter
     use NotCloneableTrait;
 
     /**
-     * @throws \Charcoal\Database\Exception\DbConnectionException
+     * @param DbCredentials $credentials
+     * @param int $errorMode
+     * @throws Exception\DbConnectionException
      */
-    public function __construct(DbCredentials $credentials, int $errorMode = \PDO::ERRMODE_EXCEPTION)
+    public function __construct(
+        #[\SensitiveParameter]
+        DbCredentials $credentials,
+        int           $errorMode = \PDO::ERRMODE_EXCEPTION
+    )
     {
         parent::__construct($credentials, $errorMode);
         $this->queries = new QueryLog();
@@ -52,7 +59,11 @@ class DatabaseClient extends PdoAdapter
      */
     public function exec(string $query, array $data = []): ExecutedQuery
     {
-        return $this->queryExec($query, $data, false);
+        try {
+            return $this->isConnected()->queryExec($query, $data, false);
+        } catch (DbConnectionException $e) {
+            throw new QueryExecuteException($query, $data, null, "Database connection failed", previous: $e);
+        }
     }
 
     /**
@@ -60,7 +71,11 @@ class DatabaseClient extends PdoAdapter
      */
     public function fetch(string $query, array $data = []): FetchQuery
     {
-        return $this->queryExec($query, $data, true);
+        try {
+            return $this->isConnected()->queryExec($query, $data, true);
+        } catch (DbConnectionException $e) {
+            throw new QueryExecuteException($query, $data, null, "Database connection failed", previous: $e);
+        }
     }
 
     /**

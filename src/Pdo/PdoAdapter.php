@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Charcoal\Database\Pdo;
 
 use Charcoal\Database\DbCredentials;
+use Charcoal\Database\Enums\DbConnectionStrategy;
 use Charcoal\Database\Exception\DbConnectionException;
 use Charcoal\Database\Exception\DbQueryException;
 use Charcoal\Database\Exception\DbTransactionException;
@@ -19,36 +20,59 @@ use Charcoal\Database\Exception\DbTransactionException;
  */
 abstract class PdoAdapter
 {
-    /** @var \PDO */
-    protected \PDO $pdo;
+    /** @var \PDO|null */
+    protected ?\PDO $pdo = null;
 
     /**
-     * @param \Charcoal\Database\DbCredentials $credentials
+     * @param DbCredentials $credentials
      * @param int $errorMode
-     * @throws \Charcoal\Database\Exception\DbConnectionException
+     * @throws DbConnectionException
      */
-    public function __construct(public readonly DbCredentials $credentials, int $errorMode)
+    public function __construct(
+        #[\SensitiveParameter]
+        public readonly DbCredentials $credentials,
+        protected readonly int        $errorMode
+    )
     {
-        $options = [\PDO::ATTR_ERRMODE => $errorMode];
-        if ($credentials->persistent === true) {
-            $options[\PDO::ATTR_PERSISTENT] = true;
-        }
-
-        try {
-            $this->pdo = new \PDO($credentials->dsn(), $credentials->username,
-                $credentials->password, $options);
-        } catch (\PDOException $e) {
-            // Connection is not established unless PERSISTENT mode is set
-            throw new DbConnectionException("Failed to establish DB connection", previous: $e);
+        // Establish connection is not Lazy strategy
+        if ($this->credentials->strategy !== DbConnectionStrategy::Lazy) {
+            $this->isConnected();
         }
     }
 
     /**
+     * @return $this
+     * @throws DbConnectionException
+     */
+    protected function isConnected(): static
+    {
+        if (isset($this->pdo)) {
+            return $this;
+        }
+
+        $options = [\PDO::ATTR_ERRMODE => $this->errorMode];
+        if ($this->credentials->strategy === DbConnectionStrategy::Persistent) {
+            $options[\PDO::ATTR_PERSISTENT] = true;
+        }
+
+        try {
+            $this->pdo = new \PDO($this->credentials->dsn(), $this->credentials->username,
+                $this->credentials->password, $options);
+        } catch (\PDOException $e) {
+            // Connection is not established unless PERSISTENT mode is set
+            throw new DbConnectionException("Failed to establish DB connection", previous: $e);
+        }
+
+        return $this;
+    }
+
+    /**
      * @return \PDO
+     * @throws DbConnectionException
      */
     public function pdoAdapter(): \PDO
     {
-        return $this->pdo;
+        return $this->isConnected()->pdo;
     }
 
     /**
@@ -61,7 +85,7 @@ abstract class PdoAdapter
 
     /**
      * @return int
-     * @throws \Charcoal\Database\Exception\DbQueryException
+     * @throws DbQueryException
      */
     public function lastInsertId(): int
     {
@@ -71,12 +95,12 @@ abstract class PdoAdapter
     /**
      * @param string|null $seq
      * @return string
-     * @throws \Charcoal\Database\Exception\DbQueryException
+     * @throws DbQueryException
      */
     public function lastInsertSeq(?string $seq = null): string
     {
         try {
-            $lastInsertId = $this->pdo->lastInsertId($seq);
+            $lastInsertId = $this->pdo?->lastInsertId($seq) ?: null;
             if (!$lastInsertId) {
                 throw new DbQueryException("Failed to retrieve last inserted id");
             }
@@ -89,12 +113,12 @@ abstract class PdoAdapter
 
     /**
      * @return bool
-     * @throws \Charcoal\Database\Exception\DbTransactionException
+     * @throws DbTransactionException
      */
     public function inTransaction(): bool
     {
         try {
-            return $this->pdo->inTransaction();
+            return $this->pdo?->inTransaction() ?: false;
         } catch (\PDOException $e) {
             throw DbTransactionException::fromPdoException($e);
         }
@@ -102,14 +126,16 @@ abstract class PdoAdapter
 
     /**
      * @return void
-     * @throws \Charcoal\Database\Exception\DbTransactionException
+     * @throws DbTransactionException
      */
     public function beginTransaction(): void
     {
         try {
-            if (!$this->pdo->beginTransaction()) {
+            if (!$this->isConnected()->pdo->beginTransaction()) {
                 throw new DbTransactionException("Failed to begin database transaction");
             }
+        } catch (DbConnectionException $e) {
+            throw new DbTransactionException("Database connection failed", previous: $e);
         } catch (\PDOException $e) {
             throw DbTransactionException::fromPdoException($e);
         }
@@ -117,12 +143,12 @@ abstract class PdoAdapter
 
     /**
      * @return void
-     * @throws \Charcoal\Database\Exception\DbTransactionException
+     * @throws DbTransactionException
      */
     public function rollBack(): void
     {
         try {
-            if (!$this->pdo->rollBack()) {
+            if (!$this->pdo?->rollBack()) {
                 throw new DbTransactionException("Failed to roll back transaction");
             }
         } catch (\PDOException $e) {
@@ -132,12 +158,12 @@ abstract class PdoAdapter
 
     /**
      * @return void
-     * @throws \Charcoal\Database\Exception\DbTransactionException
+     * @throws DbTransactionException
      */
     public function commit(): void
     {
         try {
-            if (!$this->pdo->commit()) {
+            if (!$this->pdo?->commit()) {
                 throw new DbTransactionException("Failed to commit transaction");
             }
         } catch (\PDOException $e) {
