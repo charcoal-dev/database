@@ -17,12 +17,13 @@ use Charcoal\Database\Pdo\PdoError;
 class QueryExecuteException extends DbQueryException
 {
     public function __construct(
-        public readonly string   $queryStr,
-        public readonly array    $boundData,
-        public readonly PdoError $error,
-        string                   $message = "",
-        int|string               $code = 0,
-        ?\Throwable              $previous = null)
+        public readonly string    $queryStr,
+        public readonly array     $boundData,
+        public readonly ?PdoError $error = null,
+        string                    $message = "",
+        int|string                $code = 0,
+        ?\Throwable               $previous = null
+    )
     {
         parent::__construct($message, intval($code), $previous);
     }

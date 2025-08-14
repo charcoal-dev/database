@@ -17,7 +17,7 @@ readonly class FailedQuery
 {
     public string $queryStr;
     public array $boundData;
-    public PdoError $error;
+    public ?PdoError $error;
 
     /**
      * @param \Charcoal\Database\Exception\QueryExecuteException $e
