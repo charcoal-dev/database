@@ -8,8 +8,6 @@ declare(strict_types=1);
 
 namespace Charcoal\Database\Events\Connection;
 
-use Charcoal\Database\Exception\DbConnectionException;
-
 /**
  * Class ConnectionFailed
  * @package Charcoal\Database\Events\Connection
@@ -17,9 +15,8 @@ use Charcoal\Database\Exception\DbConnectionException;
 class ConnectionFailed extends ConnectionStateEventContext
 {
     public function __construct(
-        ConnectionStateEvent                  $event,
-        public readonly DbConnectionException $exception,
-        public readonly \Throwable            $previous,
+        ConnectionStateEvent       $event,
+        public readonly \Throwable $exception,
     )
     {
         parent::__construct($event);

@@ -11,6 +11,7 @@ namespace Charcoal\Database\Pdo;
 use Charcoal\Base\Traits\ControlledSerializableTrait;
 use Charcoal\Database\DbCredentials;
 use Charcoal\Database\Enums\DbConnectionStrategy;
+use Charcoal\Database\Events\DbEvents;
 use Charcoal\Database\Exception\DbConnectionException;
 use Charcoal\Database\Exception\DbQueryException;
 use Charcoal\Database\Exception\DbTransactionException;
@@ -37,11 +38,30 @@ abstract class PdoAdapter
         protected readonly int        $errorMode
     )
     {
-        // Establish connection if not "Lazy" strategy
-        if ($this->credentials->strategy !== DbConnectionStrategy::Lazy) {
-            $this->isConnected();
-        }
+        $this->initialize();
     }
+
+    /**
+     * @return void
+     * @throws DbConnectionException
+     */
+    private function initialize(): void
+    {
+        if ($this->credentials->strategy === DbConnectionStrategy::Lazy) {
+            $this->handoverEventBook()
+                ->connectionState
+                ->dispatchConnectionWaiting($this->credentials);
+            return;
+        }
+
+        // Establish connection if not "Lazy" strategy
+        $this->isConnected();
+    }
+
+    /**
+     * @return DbEvents
+     */
+    abstract protected function handoverEventBook(): DbEvents;
 
     /**
      * @return array
@@ -65,11 +85,7 @@ abstract class PdoAdapter
         $this->pdo = null;
         $this->credentials = $data["credentials"];
         $this->errorMode = $data["errorMode"];
-
-        // Establish connection if not "Lazy" strategy
-        if ($this->credentials->strategy !== DbConnectionStrategy::Lazy) {
-            $this->isConnected();
-        }
+        $this->initialize();
     }
 
     /**
@@ -90,10 +106,18 @@ abstract class PdoAdapter
         try {
             $this->pdo = new \PDO($this->credentials->dsn(), $this->credentials->username,
                 $this->credentials->password, $options);
-        } catch (\PDOException $e) {
-            // Connection is not established unless PERSISTENT mode is set
-            throw new DbConnectionException("Failed to establish DB connection", previous: $e);
+        } catch (\Throwable $t) {
+            $this->handoverEventBook()
+                ->connectionState
+                ->dispatchConnectionFailed($t);
+
+            // Throw DbConnectionException
+            throw new DbConnectionException("Failed to establish DB connection", previous: $t);
         }
+
+        $this->handoverEventBook()
+            ->connectionState
+            ->dispatchConnectionSuccess($this->credentials, $this);
 
         return $this;
     }

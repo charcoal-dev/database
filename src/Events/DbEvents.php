@@ -20,11 +20,11 @@ use Charcoal\Database\Events\Connection\ConnectionWaiting;
  */
 readonly class DbEvents
 {
-    public ConnectionStateEvent $onConnection;
+    public ConnectionStateEvent $connectionState;
 
     public function __construct()
     {
-        $this->onConnection = new ConnectionStateEvent("onConnection", [
+        $this->connectionState = new ConnectionStateEvent("onConnection", [
             ConnectionStateEventContext::class,
             ConnectionWaiting::class,
             ConnectionSuccessful::class,
