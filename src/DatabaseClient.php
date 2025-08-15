@@ -10,8 +10,9 @@ namespace Charcoal\Database;
 
 use Charcoal\Base\Contracts\Storage\StorageProviderInterface;
 use Charcoal\Base\Enums\StorageType;
+use Charcoal\Base\Traits\NoDumpTrait;
 use Charcoal\Base\Traits\NotCloneableTrait;
-use Charcoal\Base\Traits\NotSerializableTrait;
+use Charcoal\Database\Enums\DbDriver;
 use Charcoal\Database\Events\DbEvents;
 use Charcoal\Database\Exception\DbConnectionException;
 use Charcoal\Database\Exception\QueryExecuteException;
@@ -22,17 +23,21 @@ use Charcoal\Database\Queries\FailedQuery;
 use Charcoal\Database\Queries\FetchQuery;
 use Charcoal\Database\Queries\QueryBuilder;
 use Charcoal\Database\Queries\QueryLog;
+use Charcoal\Events\Contracts\EventStoreOwnerInterface;
 
 /**
  * Class Database
  * @package Charcoal\Database
  */
-class DatabaseClient extends PdoAdapter implements StorageProviderInterface
+class DatabaseClient extends PdoAdapter implements
+    StorageProviderInterface,
+    EventStoreOwnerInterface
 {
+    public readonly string $storeContextId;
     public readonly QueryLog $queries;
-    private readonly DbEvents $events;
+    public readonly DbEvents $events;
 
-    use NotSerializableTrait;
+    use NoDumpTrait;
     use NotCloneableTrait;
 
     /**
@@ -44,15 +49,16 @@ class DatabaseClient extends PdoAdapter implements StorageProviderInterface
      */
     public function __construct(
         #[\SensitiveParameter]
-        DbCredentials $credentials,
-        int           $errorMode = \PDO::ERRMODE_EXCEPTION,
-        public bool   $serializeEvents = true,
-        public bool   $serializeQueries = false,
+        public readonly DbCredentials $credentials,
+        int                           $errorMode = \PDO::ERRMODE_EXCEPTION,
+        public bool                   $serializeEvents = true,
+        public bool                   $serializeQueries = false,
     )
     {
-        parent::__construct($credentials, $errorMode);
+        $this->storeContextId = $this->createStoreContextId();
         $this->queries = new QueryLog();
-        $this->events = new DbEvents();
+        $this->events = new DbEvents($this);
+        parent::__construct($errorMode);
     }
 
     /**
@@ -61,12 +67,12 @@ class DatabaseClient extends PdoAdapter implements StorageProviderInterface
     protected function collectSerializableData(): array
     {
         $data = parent::collectSerializableData();
+        $data["credentials"] = $this->credentials;
+        $data["storeContextId"] = $this->storeContextId;
         $data["serializeEvents"] = $this->serializeEvents;
         $data["serializeQueries"] = $this->serializeQueries;
-        $data["events"] = isset($this->events) && $this->serializeEvents ?
-            $this->events : null;
-        $data["queries"] = isset($this->queries) && $this->serializeQueries ?
-            $this->queries : null;
+        $data["events"] = isset($this->events) && $this->serializeEvents ? $this->events : null;
+        $data["queries"] = isset($this->queries) && $this->serializeQueries ? $this->queries : null;
         return $data;
     }
 
@@ -77,6 +83,8 @@ class DatabaseClient extends PdoAdapter implements StorageProviderInterface
      */
     public function __unserialize(array $data): void
     {
+        $this->credentials = $data["credentials"];
+        $this->storeContextId = $data["storeContextId"];
         $this->serializeEvents = $data["serializeEvents"];
         $this->serializeQueries = $data["serializeQueries"];
         if ($this->serializeEvents && $data["events"]) {
@@ -88,7 +96,7 @@ class DatabaseClient extends PdoAdapter implements StorageProviderInterface
         }
 
         if (!isset($this->events)) {
-            $this->events = new DbEvents();
+            $this->events = new DbEvents($this);
         }
 
         if (!isset($this->queries)) {
@@ -217,11 +225,31 @@ class DatabaseClient extends PdoAdapter implements StorageProviderInterface
     /**
      * @return string
      */
-    public function storageProviderId(): string
+    protected function createStoreContextId(): string
     {
-        return strtolower(sprintf("%s_%s_%s",
+        return strtolower(sprintf("[%s][@%s]:%s",
             $this->credentials->driver->value,
             $this->credentials->host,
-            $this->credentials->dbName));
+            match ($this->credentials->driver) {
+                DbDriver::SQLITE => basename($this->credentials->dbName),
+                default => $this->credentials->dbName,
+            } ?? throw new \LogicException("Invalid database name"),
+        ));
+    }
+
+    /**
+     * @return string
+     */
+    public function storageProviderId(): string
+    {
+        return $this->storeContextId;
+    }
+
+    /**
+     * @return string
+     */
+    public function eventsUniqueContextKey(): string
+    {
+        return $this->storeContextId;
     }
 }

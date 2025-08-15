@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace Charcoal\Database\Pdo;
 
 use Charcoal\Base\Traits\ControlledSerializableTrait;
-use Charcoal\Database\DbCredentials;
 use Charcoal\Database\Enums\DbConnectionStrategy;
 use Charcoal\Database\Events\DbEvents;
 use Charcoal\Database\Exception\DbConnectionException;
@@ -28,15 +27,10 @@ abstract class PdoAdapter
     protected ?\PDO $pdo = null;
 
     /**
-     * @param DbCredentials $credentials
      * @param int $errorMode
      * @throws DbConnectionException
      */
-    public function __construct(
-        #[\SensitiveParameter]
-        public readonly DbCredentials $credentials,
-        protected readonly int        $errorMode
-    )
+    public function __construct(protected readonly int $errorMode)
     {
         $this->initialize();
     }
@@ -48,8 +42,7 @@ abstract class PdoAdapter
     private function initialize(): void
     {
         if ($this->credentials->strategy === DbConnectionStrategy::Lazy) {
-            $this->handoverEventBook()
-                ->connectionState
+            $this->events->connectionState
                 ->dispatchConnectionWaiting($this->credentials);
             return;
         }
@@ -70,7 +63,6 @@ abstract class PdoAdapter
     {
         return [
             "pdo" => null,
-            "credentials" => $this->credentials,
             "errorMode" => $this->errorMode,
         ];
     }
@@ -83,7 +75,6 @@ abstract class PdoAdapter
     public function __unserialize(array $data): void
     {
         $this->pdo = null;
-        $this->credentials = $data["credentials"];
         $this->errorMode = $data["errorMode"];
         $this->initialize();
     }
