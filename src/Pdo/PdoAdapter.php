@@ -14,9 +14,9 @@ use Charcoal\Database\Events\Connection\ConnectionError;
 use Charcoal\Database\Events\Connection\ConnectionSuccess;
 use Charcoal\Database\Events\Connection\ConnectionWaiting;
 use Charcoal\Database\Events\ConnectionEvent;
-use Charcoal\Database\Exception\DbConnectionException;
-use Charcoal\Database\Exception\DbQueryException;
-use Charcoal\Database\Exception\DbTransactionException;
+use Charcoal\Database\Exceptions\DbConnectionException;
+use Charcoal\Database\Exceptions\DbQueryException;
+use Charcoal\Database\Exceptions\DbTransactionException;
 
 /**
  * Class PdoAdapter

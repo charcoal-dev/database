@@ -6,12 +6,12 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\Database\Exception;
+namespace Charcoal\Database\Exceptions;
 
 /**
- * Class DbQueryException
+ * Class QueryBuilderException
  * @package Charcoal\Database\Exception
  */
-class DbQueryException extends DatabaseException
+class QueryBuilderException extends DbQueryException
 {
 }

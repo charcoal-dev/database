@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\Database\Enums;
 
-use Charcoal\Database\Exception\DbQueryException;
+use Charcoal\Database\Exceptions\DbQueryException;
 
 /**
  * Class LockFlag

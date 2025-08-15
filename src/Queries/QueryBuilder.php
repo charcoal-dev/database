@@ -11,7 +11,7 @@ namespace Charcoal\Database\Queries;
 use Charcoal\Base\Enums\Sort;
 use Charcoal\Database\DatabaseClient;
 use Charcoal\Database\Enums\LockFlag;
-use Charcoal\Database\Exception\QueryBuilderException;
+use Charcoal\Database\Exceptions\QueryBuilderException;
 
 /**
  * Class QueryBuilder
@@ -33,7 +33,7 @@ class QueryBuilder
     }
 
     /**
-     * @throws \Charcoal\Database\Exception\DbQueryException
+     * @throws \Charcoal\Database\Exceptions\DbQueryException
      */
     public function insert(array $assoc): ExecutedQuery
     {
@@ -61,7 +61,7 @@ class QueryBuilder
     /**
      * @param array $assoc
      * @return \Charcoal\Database\Queries\ExecutedQuery
-     * @throws \Charcoal\Database\Exception\DbQueryException
+     * @throws \Charcoal\Database\Exceptions\DbQueryException
      */
     public function update(array $assoc): ExecutedQuery
     {
@@ -100,7 +100,7 @@ class QueryBuilder
     }
 
     /**
-     * @throws \Charcoal\Database\Exception\DbQueryException
+     * @throws \Charcoal\Database\Exceptions\DbQueryException
      */
     public function delete(): ExecutedQuery
     {
@@ -115,7 +115,7 @@ class QueryBuilder
     }
 
     /**
-     * @throws \Charcoal\Database\Exception\DbQueryException
+     * @throws \Charcoal\Database\Exceptions\DbQueryException
      */
     public function fetch(): FetchQuery
     {

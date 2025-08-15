@@ -6,7 +6,7 @@
 
 namespace Charcoal\Database\Queries;
 
-use Charcoal\Database\Exception\QueryExecuteException;
+use Charcoal\Database\Exceptions\QueryExecuteException;
 use Charcoal\Database\Pdo\PdoError;
 
 /**
@@ -20,7 +20,7 @@ readonly class FailedQuery
     public ?PdoError $error;
 
     /**
-     * @param \Charcoal\Database\Exception\QueryExecuteException $e
+     * @param \Charcoal\Database\Exceptions\QueryExecuteException $e
      */
     public function __construct(QueryExecuteException $e)
     {

@@ -11,7 +11,7 @@ namespace Charcoal\Database\Queries;
 use Charcoal\Base\Traits\NoDumpTrait;
 use Charcoal\Base\Traits\NotCloneableTrait;
 use Charcoal\Base\Traits\NotSerializableTrait;
-use Charcoal\Database\Exception\QueryFetchException;
+use Charcoal\Database\Exceptions\QueryFetchException;
 
 /**
  * Class FetchQuery
@@ -37,7 +37,7 @@ class FetchQuery
     /**
      * Alias of getNext() method
      * @return array|null
-     * @throws \Charcoal\Database\Exception\QueryFetchException
+     * @throws \Charcoal\Database\Exceptions\QueryFetchException
      */
     public function row(): ?array
     {
@@ -47,7 +47,7 @@ class FetchQuery
     /**
      * Returns next row
      * @return array|null
-     * @throws \Charcoal\Database\Exception\QueryFetchException
+     * @throws \Charcoal\Database\Exceptions\QueryFetchException
      */
     public function getNext(): ?array
     {
@@ -63,7 +63,7 @@ class FetchQuery
     /**
      * Returns all rows from
      * @return array
-     * @throws \Charcoal\Database\Exception\QueryFetchException
+     * @throws \Charcoal\Database\Exceptions\QueryFetchException
      */
     public function getAll(): array
     {

@@ -15,8 +15,8 @@
   "require": {
     "php": "^8.3",
     "ext-pdo": "*",
-    "charcoal-dev/base": ">=0.0.1 <0.1.0",
-    "charcoal-dev/events": "^0.1.5"
+    "charcoal-dev/base": ">=0.0.13 <0.1.0",
+    "charcoal-dev/events": "^0.1.7"
   },
   "autoload": {
     "psr-4": {
