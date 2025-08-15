@@ -9,9 +9,9 @@ declare(strict_types=1);
 namespace Charcoal\Database\Events;
 
 use Charcoal\Database\DatabaseClient;
-use Charcoal\Database\Events\Connection\ConnectionFailed;
+use Charcoal\Database\Events\Connection\ConnectionError;
 use Charcoal\Database\Events\Connection\ConnectionStateContext;
-use Charcoal\Database\Events\Connection\ConnectionSuccessful;
+use Charcoal\Database\Events\Connection\ConnectionSuccess;
 use Charcoal\Database\Events\Connection\ConnectionWaiting;
 use Charcoal\Events\BehaviorEvent;
 use Charcoal\Events\Dispatch\DispatchReport;
@@ -23,7 +23,7 @@ use Charcoal\Events\Support\Traits\EventStaticScopeTrait;
  * @package Charcoal\Database\Events
  * @template T of ConnectionEvent
  * @template S of DatabaseClient
- * @template E of ConnectionSuccessful|ConnectionFailed|ConnectionWaiting
+ * @template E of ConnectionSuccess|ConnectionError|ConnectionWaiting
  */
 class ConnectionEvent extends BehaviorEvent
 {
@@ -37,8 +37,8 @@ class ConnectionEvent extends BehaviorEvent
         parent::__construct("onConnection", [
             ConnectionStateContext::class,
             ConnectionWaiting::class,
-            ConnectionSuccessful::class,
-            ConnectionFailed::class,
+            ConnectionSuccess::class,
+            ConnectionError::class,
         ]);
 
         $this->registerStaticEventStore($this->client);

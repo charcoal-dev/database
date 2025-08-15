@@ -10,8 +10,8 @@ namespace Charcoal\Database\Pdo;
 
 use Charcoal\Base\Traits\ControlledSerializableTrait;
 use Charcoal\Database\Enums\DbConnectionStrategy;
-use Charcoal\Database\Events\Connection\ConnectionFailed;
-use Charcoal\Database\Events\Connection\ConnectionSuccessful;
+use Charcoal\Database\Events\Connection\ConnectionError;
+use Charcoal\Database\Events\Connection\ConnectionSuccess;
 use Charcoal\Database\Events\Connection\ConnectionWaiting;
 use Charcoal\Database\Events\ConnectionEvent;
 use Charcoal\Database\Exception\DbConnectionException;
@@ -95,14 +95,14 @@ abstract class PdoAdapter
             $this->pdo = new \PDO($this->credentials->dsn(), $this->credentials->username,
                 $this->credentials->password, $options);
         } catch (\Throwable $t) {
-            ConnectionEvent::getEvent($this)->dispatch(new ConnectionFailed($t));
+            ConnectionEvent::getEvent($this)->dispatch(new ConnectionError($t));
 
             // Throw DbConnectionException
             throw new DbConnectionException("Failed to establish DB connection", previous: $t);
         }
 
         ConnectionEvent::getEvent($this)
-            ->dispatch(new ConnectionSuccessful($this->credentials, $this));
+            ->dispatch(new ConnectionSuccess($this->credentials, $this));
         return $this;
     }
 

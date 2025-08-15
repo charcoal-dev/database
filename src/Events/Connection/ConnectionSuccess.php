@@ -12,10 +12,10 @@ use Charcoal\Database\DatabaseClient;
 use Charcoal\Database\DbCredentials;
 
 /**
- * Class ConnectionSuccessful
+ * Class ConnectionSuccess
  * @package Charcoal\Database\Events\Connection
  */
-readonly class ConnectionSuccessful implements ConnectionStateContext
+readonly class ConnectionSuccess implements ConnectionStateContext
 {
     public function __construct(
         #[\SensitiveParameter]

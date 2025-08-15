@@ -9,10 +9,10 @@ declare(strict_types=1);
 namespace Charcoal\Database\Events\Connection;
 
 /**
- * Class ConnectionFailed
+ * Class ConnectionError
  * @package Charcoal\Database\Events\Connection
  */
-readonly class ConnectionFailed implements ConnectionStateContext
+readonly class ConnectionError implements ConnectionStateContext
 {
     public function __construct(
         public \Throwable $exception,
