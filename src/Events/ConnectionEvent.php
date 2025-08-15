@@ -13,7 +13,6 @@ use Charcoal\Database\Events\Connection\ConnectionFailed;
 use Charcoal\Database\Events\Connection\ConnectionStateContext;
 use Charcoal\Database\Events\Connection\ConnectionSuccessful;
 use Charcoal\Database\Events\Connection\ConnectionWaiting;
-use Charcoal\Events\AbstractEvent;
 use Charcoal\Events\BehaviorEvent;
 use Charcoal\Events\Dispatch\DispatchReport;
 use Charcoal\Events\Subscriptions\Subscription;
