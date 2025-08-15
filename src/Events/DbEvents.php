@@ -8,11 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\Database\Events;
 
-use Charcoal\Database\Events\Connection\ConnectionFailed;
-use Charcoal\Database\Events\Connection\ConnectionStateEvent;
-use Charcoal\Database\Events\Connection\ConnectionStateEventContext;
-use Charcoal\Database\Events\Connection\ConnectionSuccessful;
-use Charcoal\Database\Events\Connection\ConnectionWaiting;
+use Charcoal\Database\DatabaseClient;
 
 /**
  * Class DbEvents
@@ -20,15 +16,10 @@ use Charcoal\Database\Events\Connection\ConnectionWaiting;
  */
 readonly class DbEvents
 {
-    public ConnectionStateEvent $connectionState;
+    public ConnectionEvent $connectionState;
 
-    public function __construct()
+    public function __construct(DatabaseClient $db)
     {
-        $this->connectionState = new ConnectionStateEvent("onConnection", [
-            ConnectionStateEventContext::class,
-            ConnectionWaiting::class,
-            ConnectionSuccessful::class,
-            ConnectionFailed::class,
-        ]);
+        $this->connectionState = new ConnectionEvent($db);
     }
 }

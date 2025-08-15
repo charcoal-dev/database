@@ -14,14 +14,12 @@ use Charcoal\Database\DbCredentials;
  * Class ConnectionWaiting
  * @package Charcoal\Database\Events\Connection
  */
-class ConnectionWaiting extends ConnectionStateEventContext
+readonly class ConnectionWaiting implements ConnectionStateContext
 {
     public function __construct(
-        ConnectionStateEvent          $event,
         #[\SensitiveParameter]
-        public readonly DbCredentials $credentials
+        public DbCredentials $credentials
     )
     {
-        parent::__construct($event);
     }
 }

@@ -10,7 +10,10 @@ namespace Charcoal\Database\Pdo;
 
 use Charcoal\Base\Traits\ControlledSerializableTrait;
 use Charcoal\Database\Enums\DbConnectionStrategy;
-use Charcoal\Database\Events\DbEvents;
+use Charcoal\Database\Events\Connection\ConnectionFailed;
+use Charcoal\Database\Events\Connection\ConnectionSuccessful;
+use Charcoal\Database\Events\Connection\ConnectionWaiting;
+use Charcoal\Database\Events\ConnectionEvent;
 use Charcoal\Database\Exception\DbConnectionException;
 use Charcoal\Database\Exception\DbQueryException;
 use Charcoal\Database\Exception\DbTransactionException;
@@ -42,19 +45,13 @@ abstract class PdoAdapter
     private function initialize(): void
     {
         if ($this->credentials->strategy === DbConnectionStrategy::Lazy) {
-            $this->events->connectionState
-                ->dispatchConnectionWaiting($this->credentials);
+            ConnectionEvent::getEvent($this)->dispatch(new ConnectionWaiting($this->credentials));
             return;
         }
 
         // Establish connection if not "Lazy" strategy
         $this->isConnected();
     }
-
-    /**
-     * @return DbEvents
-     */
-    abstract protected function handoverEventBook(): DbEvents;
 
     /**
      * @return array
@@ -98,18 +95,14 @@ abstract class PdoAdapter
             $this->pdo = new \PDO($this->credentials->dsn(), $this->credentials->username,
                 $this->credentials->password, $options);
         } catch (\Throwable $t) {
-            $this->handoverEventBook()
-                ->connectionState
-                ->dispatchConnectionFailed($t);
+            ConnectionEvent::getEvent($this)->dispatch(new ConnectionFailed($t));
 
             // Throw DbConnectionException
             throw new DbConnectionException("Failed to establish DB connection", previous: $t);
         }
 
-        $this->handoverEventBook()
-            ->connectionState
-            ->dispatchConnectionSuccess($this->credentials, $this);
-
+        ConnectionEvent::getEvent($this)
+            ->dispatch(new ConnectionSuccessful($this->credentials, $this));
         return $this;
     }
 

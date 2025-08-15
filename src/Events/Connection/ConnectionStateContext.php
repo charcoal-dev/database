@@ -8,15 +8,12 @@ declare(strict_types=1);
 
 namespace Charcoal\Database\Events\Connection;
 
+use Charcoal\Events\Contracts\EventContextInterface;
+
 /**
- * Class ConnectionFailed
+ * Interface ConnectionStateContext
  * @package Charcoal\Database\Events\Connection
  */
-readonly class ConnectionFailed implements ConnectionStateContext
+interface ConnectionStateContext extends EventContextInterface
 {
-    public function __construct(
-        public \Throwable $exception,
-    )
-    {
-    }
 }

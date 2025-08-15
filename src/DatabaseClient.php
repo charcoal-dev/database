@@ -207,14 +207,6 @@ class DatabaseClient extends PdoAdapter implements
     }
 
     /**
-     * @return DbEvents
-     */
-    protected function handoverEventBook(): DbEvents
-    {
-        return $this->events;
-    }
-
-    /**
      * @return StorageType
      */
     public function storageType(): StorageType

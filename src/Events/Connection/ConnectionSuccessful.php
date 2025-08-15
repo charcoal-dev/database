@@ -15,15 +15,13 @@ use Charcoal\Database\DbCredentials;
  * Class ConnectionSuccessful
  * @package Charcoal\Database\Events\Connection
  */
-class ConnectionSuccessful extends ConnectionStateEventContext
+readonly class ConnectionSuccessful implements ConnectionStateContext
 {
     public function __construct(
-        ConnectionStateEvent           $event,
         #[\SensitiveParameter]
-        public readonly DbCredentials  $credentials,
-        public readonly DatabaseClient $db
+        public DbCredentials  $credentials,
+        public DatabaseClient $db
     )
     {
-        parent::__construct($event);
     }
 }
