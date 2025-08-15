@@ -14,6 +14,7 @@ use Charcoal\Database\Events\Connection\ConnectionStateContext;
 use Charcoal\Database\Events\Connection\ConnectionSuccessful;
 use Charcoal\Database\Events\Connection\ConnectionWaiting;
 use Charcoal\Events\AbstractEvent;
+use Charcoal\Events\BehaviorEvent;
 use Charcoal\Events\Dispatch\DispatchReport;
 use Charcoal\Events\Subscriptions\Subscription;
 use Charcoal\Events\Support\Traits\EventStaticScopeTrait;
@@ -25,7 +26,7 @@ use Charcoal\Events\Support\Traits\EventStaticScopeTrait;
  * @template S of DatabaseClient
  * @template E of ConnectionSuccessful|ConnectionFailed|ConnectionWaiting
  */
-class ConnectionEvent extends AbstractEvent
+class ConnectionEvent extends BehaviorEvent
 {
     use EventStaticScopeTrait;
 
