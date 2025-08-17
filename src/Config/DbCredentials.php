@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\Database;
+namespace Charcoal\Database\Config;
 
 use Charcoal\Base\Traits\NoDumpTrait;
 use Charcoal\Database\Enums\DbConnectionStrategy;
@@ -14,7 +14,7 @@ use Charcoal\Database\Enums\DbDriver;
 
 /**
  * Class DbCredentials
- * @package Charcoal\Database
+ * @package Charcoal\Database\Config
  */
 class DbCredentials
 {
@@ -29,7 +29,7 @@ class DbCredentials
         #[\SensitiveParameter]
         public readonly ?string              $username = null,
         #[\SensitiveParameter]
-        public ?string                       $password = null,
+        public readonly ?string              $password = null,
         public readonly DbConnectionStrategy $strategy = DbConnectionStrategy::Lazy,
     )
     {

@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 namespace Charcoal\Database\Events\Connection;
 
+use Charcoal\Database\Config\DbCredentials;
 use Charcoal\Database\DatabaseClient;
-use Charcoal\Database\DbCredentials;
 
 /**
  * Class ConnectionSuccess

@@ -12,6 +12,7 @@ use Charcoal\Base\Contracts\Storage\StorageProviderInterface;
 use Charcoal\Base\Enums\StorageType;
 use Charcoal\Base\Traits\NoDumpTrait;
 use Charcoal\Base\Traits\NotCloneableTrait;
+use Charcoal\Database\Config\DbCredentials;
 use Charcoal\Database\Enums\DbDriver;
 use Charcoal\Database\Events\DbEvents;
 use Charcoal\Database\Exceptions\DbConnectionException;
@@ -42,6 +43,7 @@ class DatabaseClient extends PdoAdapter implements
 
     /**
      * @param DbCredentials $credentials
+     * @param string|null $password
      * @param int $errorMode
      * @param bool $serializeEvents
      * @param bool $serializeQueries
@@ -50,6 +52,8 @@ class DatabaseClient extends PdoAdapter implements
     public function __construct(
         #[\SensitiveParameter]
         public readonly DbCredentials $credentials,
+        #[\SensitiveParameter]
+        public readonly ?string       $password = null,
         int                           $errorMode = \PDO::ERRMODE_EXCEPTION,
         public bool                   $serializeEvents = true,
         public bool                   $serializeQueries = false,

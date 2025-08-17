@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\Database\Events\Connection;
 
-use Charcoal\Database\DbCredentials;
+use Charcoal\Database\Config\DbCredentials;
 
 /**
  * Class ConnectionWaiting

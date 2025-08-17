@@ -93,11 +93,10 @@ abstract class PdoAdapter
 
         try {
             $this->pdo = new \PDO($this->credentials->dsn(), $this->credentials->username,
-                $this->credentials->password, $options);
+                $this->password ?? $this->credentials->password, $options);
         } catch (\Throwable $t) {
-            ConnectionEvent::getEvent($this)->dispatch(new ConnectionError($t));
-
-            // Throw DbConnectionException
+            ConnectionEvent::getEvent($this)
+                ->dispatch(new ConnectionError($t));
             throw new DbConnectionException("Failed to establish DB connection", previous: $t);
         }
 
