@@ -16,21 +16,21 @@ use Charcoal\Database\Enums\DbDriver;
  * Class DbCredentials
  * @package Charcoal\Database\Config
  */
-class DbCredentials
+readonly class DbCredentials
 {
     use NoDumpTrait;
 
     public function __construct(
-        public readonly DbDriver             $driver,
-        public readonly string               $dbName,
+        public DbDriver             $driver,
+        public string               $dbName,
         #[\SensitiveParameter]
-        public readonly string               $host = "localhost",
-        public readonly ?int                 $port = null,
+        public string               $host = "localhost",
+        public ?int                 $port = null,
         #[\SensitiveParameter]
-        public readonly ?string              $username = null,
+        public ?string              $username = null,
         #[\SensitiveParameter]
-        public readonly ?string              $password = null,
-        public readonly DbConnectionStrategy $strategy = DbConnectionStrategy::Lazy,
+        public ?string              $password = null,
+        public DbConnectionStrategy $strategy = DbConnectionStrategy::Lazy,
     )
     {
         if (!in_array($this->driver->value, \PDO::getAvailableDrivers())) {
