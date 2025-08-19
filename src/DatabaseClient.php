@@ -215,7 +215,7 @@ class DatabaseClient extends PdoAdapter implements
      */
     public function storageType(): StorageType
     {
-        return StorageType::DATABASE;
+        return StorageType::Database;
     }
 
     /**
