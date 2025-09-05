@@ -8,13 +8,13 @@ declare(strict_types=1);
 
 namespace Charcoal\Database\Config;
 
-use Charcoal\Base\Traits\NoDumpTrait;
+use Charcoal\Base\Objects\Traits\NoDumpTrait;
 use Charcoal\Database\Enums\DbConnectionStrategy;
 use Charcoal\Database\Enums\DbDriver;
 
 /**
- * Class DbCredentials
- * @package Charcoal\Database\Config
+ * Represents database credentials and configuration,
+ * required for establishing a database connection.
  */
 readonly class DbCredentials
 {

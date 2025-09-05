@@ -11,8 +11,7 @@ namespace Charcoal\Database\Enums;
 use Charcoal\Database\Exceptions\DbQueryException;
 
 /**
- * Class LockFlag
- * @package Charcoal\Database\Queries
+ * Represents lock flag options used for database query operations.
  */
 enum LockFlag
 {

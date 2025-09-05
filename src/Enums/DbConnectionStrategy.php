@@ -9,8 +9,7 @@ declare(strict_types=1);
 namespace Charcoal\Database\Enums;
 
 /**
- * Class DbConnectionStrategy
- * @package Charcoal\Database\Enums
+ * Defines the strategies for database connection handling.
  */
 enum DbConnectionStrategy
 {

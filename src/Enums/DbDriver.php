@@ -9,13 +9,11 @@ declare(strict_types=1);
 namespace Charcoal\Database\Enums;
 
 /**
- * Class DbDriver
- * @package Charcoal\Database\Enums
+ * Enum representing database driver types.
  */
 enum DbDriver: string
 {
     case MYSQL = "mysql";
     case SQLITE = "sqlite";
     case PGSQL = "pgsql";
-    case UNKNOWN = "unknown";
 }
