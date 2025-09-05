@@ -145,7 +145,7 @@ final class QueryBuilder
      * @param string $name
      * @return $this
      */
-    public function table(string $name): static
+    public function table(string $name): self
     {
         $this->tableName = trim($name);
         return $this;
@@ -157,7 +157,7 @@ final class QueryBuilder
      * @param array $data
      * @return $this
      */
-    public function where(string $clause = "1", array $data = []): static
+    public function where(string $clause = "1", array $data = []): self
     {
         $this->whereClause = $clause;
         $this->queryData = $data;
@@ -169,7 +169,7 @@ final class QueryBuilder
      * @param array $cols
      * @return $this
      */
-    public function find(array $cols): static
+    public function find(array $cols): self
     {
         // Reset
         $this->whereClause = "";
@@ -194,7 +194,7 @@ final class QueryBuilder
      * @param string ...$cols
      * @return $this
      */
-    public function cols(string ...$cols): static
+    public function cols(string ...$cols): self
     {
         $this->selectColumns = implode(",", array_map(function ($col) {
             return preg_match('/[(|)]/', $col) ? trim($col) : sprintf('`%1$s`', trim($col));
@@ -206,7 +206,7 @@ final class QueryBuilder
      *
      * @return $this
      */
-    public function lock(LockFlag $flag = LockFlag::FOR_UPDATE): static
+    public function lock(LockFlag $flag = LockFlag::FOR_UPDATE): self
     {
         $this->selectLock = $flag;
         return $this;
@@ -217,7 +217,7 @@ final class QueryBuilder
      * @param string ...$columns
      * @return $this
      */
-    public function sort(Sort $flag, string ...$columns): static
+    public function sort(Sort $flag, string ...$columns): self
     {
         $columns = array_map(function ($column) {
             return sprintf('`%1$s`', trim($column));
@@ -232,7 +232,7 @@ final class QueryBuilder
      * @param int $from
      * @return $this
      */
-    public function start(int $from): static
+    public function start(int $from): self
     {
         $this->selectStart = $from;
         return $this;
@@ -243,7 +243,7 @@ final class QueryBuilder
      * @param int $to
      * @return $this
      */
-    public function limit(int $to): static
+    public function limit(int $to): self
     {
         $this->selectLimit = $to;
         return $this;
