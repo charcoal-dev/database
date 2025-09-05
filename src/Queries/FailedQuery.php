@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * Part of the "charcoal-dev/database" package.
  * @link https://github.com/charcoal-dev/database
  */
@@ -10,8 +10,8 @@ use Charcoal\Database\Exceptions\QueryExecuteException;
 use Charcoal\Database\Pdo\PdoError;
 
 /**
- * Class FailedQuery
- * @package Charcoal\Database\Queries
+ * Represents a failed database query and captures information
+ * about the failed execution for debugging purposes.
  */
 readonly class FailedQuery
 {

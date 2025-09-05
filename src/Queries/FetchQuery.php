@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * Part of the "charcoal-dev/database" package.
  * @link https://github.com/charcoal-dev/database
  */
@@ -8,16 +8,16 @@ declare(strict_types=1);
 
 namespace Charcoal\Database\Queries;
 
-use Charcoal\Base\Traits\NoDumpTrait;
-use Charcoal\Base\Traits\NotCloneableTrait;
-use Charcoal\Base\Traits\NotSerializableTrait;
+use Charcoal\Base\Objects\Traits\NoDumpTrait;
+use Charcoal\Base\Objects\Traits\NotCloneableTrait;
+use Charcoal\Base\Objects\Traits\NotSerializableTrait;
 use Charcoal\Database\Exceptions\QueryFetchException;
 
 /**
- * Class FetchQuery
- * @package Charcoal\Database\Queries
+ * Class responsible for fetching query results from a database statement.
+ * Provides methods to retrieve single or multiple rows.
  */
-class FetchQuery
+final readonly class FetchQuery
 {
     use NoDumpTrait;
     use NotCloneableTrait;
@@ -28,8 +28,8 @@ class FetchQuery
      * @param \PDOStatement $stmt
      */
     public function __construct(
-        public readonly ExecutedQuery  $query,
-        private readonly \PDOStatement $stmt,
+        public ExecutedQuery  $query,
+        private \PDOStatement $stmt,
     )
     {
     }

@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * Part of the "charcoal-dev/database" package.
  * @link https://github.com/charcoal-dev/database
  */
@@ -8,16 +8,16 @@ declare(strict_types=1);
 
 namespace Charcoal\Database\Queries;
 
-use Charcoal\Base\Enums\Sort;
+use Charcoal\Contracts\Dataset\Sort;
 use Charcoal\Database\DatabaseClient;
 use Charcoal\Database\Enums\LockFlag;
 use Charcoal\Database\Exceptions\QueryBuilderException;
 
 /**
- * Class QueryBuilder
- * @package Charcoal\Database\Queries
+ * A utility class for constructing and executing database queries.
+ * It supports operations like INSERT, UPDATE, DELETE, and SELECT with chaining.
  */
-class QueryBuilder
+final class QueryBuilder
 {
     private string $tableName = "";
     private string $whereClause = "1";

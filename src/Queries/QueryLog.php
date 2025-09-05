@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * Part of the "charcoal-dev/database" package.
  * @link https://github.com/charcoal-dev/database
  */
@@ -8,15 +8,17 @@ declare(strict_types=1);
 
 namespace Charcoal\Database\Queries;
 
-use Charcoal\Base\Concerns\InstancedObjectsRegistry;
-use Charcoal\Base\Concerns\RegistryKeysLowercaseTrimmed;
+use Charcoal\Base\Registry\Traits\InstancedObjectsRegistry;
+use Charcoal\Base\Registry\Traits\RegistryKeysLowercaseTrimmed;
 
 /**
- * Class QueryArchive
- * @package Charcoal\Database\Queries
+ * A log management class that maintains a collection of executed or failed queries.
+ * It supports appending queries, clearing the log, counting the stored queries,
+ * and iterating over the collection.
+ * @uses InstancedObjectsRegistry<ExecutedQuery|FailedQuery>
  * @property array<ExecutedQuery|FailedQuery> $queries
  */
-class QueryLog implements \IteratorAggregate
+final class QueryLog implements \IteratorAggregate
 {
     use InstancedObjectsRegistry;
     use RegistryKeysLowercaseTrimmed;
