@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * Part of the "charcoal-dev/database" package.
  * @link https://github.com/charcoal-dev/database
  */
@@ -8,13 +8,12 @@ declare(strict_types=1);
 
 namespace Charcoal\Database;
 
-use Charcoal\Base\Contracts\Storage\StorageProviderInterface;
-use Charcoal\Base\Enums\StorageType;
-use Charcoal\Base\Traits\NoDumpTrait;
-use Charcoal\Base\Traits\NotCloneableTrait;
+use Charcoal\Base\Objects\Traits\NoDumpTrait;
+use Charcoal\Base\Objects\Traits\NotCloneableTrait;
+use Charcoal\Contracts\Storage\Enums\StorageType;
+use Charcoal\Contracts\Storage\StorageProviderInterface;
 use Charcoal\Database\Config\DbCredentials;
 use Charcoal\Database\Enums\DbDriver;
-use Charcoal\Database\Events\DbEvents;
 use Charcoal\Database\Exceptions\DbConnectionException;
 use Charcoal\Database\Exceptions\QueryExecuteException;
 use Charcoal\Database\Pdo\PdoAdapter;
@@ -27,8 +26,9 @@ use Charcoal\Database\Queries\QueryLog;
 use Charcoal\Events\Contracts\EventStoreOwnerInterface;
 
 /**
- * Class Database
- * @package Charcoal\Database
+ * Represents a database client that integrates with a database storage system.
+ * It provides abstraction over the PDO interface and includes functionality for
+ * query execution, event handling, query logging, and serialization.
  */
 class DatabaseClient extends PdoAdapter implements
     StorageProviderInterface,
@@ -36,7 +36,6 @@ class DatabaseClient extends PdoAdapter implements
 {
     public readonly string $storeContextId;
     public readonly QueryLog $queries;
-    public readonly DbEvents $events;
 
     use NoDumpTrait;
     use NotCloneableTrait;
@@ -55,14 +54,12 @@ class DatabaseClient extends PdoAdapter implements
         #[\SensitiveParameter]
         public readonly ?string       $password = null,
         int                           $errorMode = \PDO::ERRMODE_EXCEPTION,
-        public bool                   $serializeEvents = true,
+        bool                          $serializeEvents = true,
         public bool                   $serializeQueries = false,
     )
     {
         $this->storeContextId = $this->createStoreContextId();
-        $this->queries = new QueryLog();
-        $this->events = new DbEvents($this);
-        parent::__construct($errorMode);
+        parent::__construct($errorMode, $serializeEvents);
     }
 
     /**
@@ -89,18 +86,9 @@ class DatabaseClient extends PdoAdapter implements
     {
         $this->credentials = $data["credentials"];
         $this->storeContextId = $data["storeContextId"];
-        $this->serializeEvents = $data["serializeEvents"];
         $this->serializeQueries = $data["serializeQueries"];
-        if ($this->serializeEvents && $data["events"]) {
-            $this->events = $data["events"];
-        }
-
         if ($this->serializeQueries && $data["queries"]) {
             $this->queries = $data["queries"];
-        }
-
-        if (!isset($this->events)) {
-            $this->events = new DbEvents($this);
         }
 
         if (!isset($this->queries)) {

@@ -31,9 +31,13 @@ abstract class PdoAdapter
 
     /**
      * @param int $errorMode
+     * @param bool $serializeEvents
      * @throws DbConnectionException
      */
-    public function __construct(protected readonly int $errorMode)
+    public function __construct(
+        protected readonly int $errorMode,
+        public bool            $serializeEvents = true,
+    )
     {
         $this->events = new DbEvents($this);
         $this->initialize();
@@ -61,6 +65,8 @@ abstract class PdoAdapter
     {
         return [
             "pdo" => null,
+            "events" => isset($this->events) && $this->serializeEvents ? $this->events : null,
+            "serializeEvents" => $this->serializeEvents,
             "errorMode" => $this->errorMode,
         ];
     }
@@ -74,6 +80,15 @@ abstract class PdoAdapter
     {
         $this->pdo = null;
         $this->errorMode = $data["errorMode"];
+        $this->serializeEvents = $data["serializeEvents"];
+        if ($this->serializeEvents && $data["events"]) {
+            $this->events = $data["events"];
+        }
+
+        if (!isset($this->events)) {
+            $this->events = new DbEvents($this);
+        }
+
         $this->initialize();
     }
 
