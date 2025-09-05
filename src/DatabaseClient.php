@@ -60,6 +60,7 @@ class DatabaseClient extends PdoAdapter implements
     {
         $this->storeContextId = $this->createStoreContextId();
         parent::__construct($errorMode, $serializeEvents);
+        $this->queries = new QueryLog();
     }
 
     /**
