@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * Part of the "charcoal-dev/database" package.
  * @link https://github.com/charcoal-dev/database
  */
@@ -8,26 +8,26 @@ declare(strict_types=1);
 
 namespace Charcoal\Database\Pdo;
 
-use Charcoal\Base\Traits\ControlledSerializableTrait;
+use Charcoal\Base\Objects\Traits\ControlledSerializableTrait;
 use Charcoal\Database\Enums\DbConnectionStrategy;
 use Charcoal\Database\Events\Connection\ConnectionError;
 use Charcoal\Database\Events\Connection\ConnectionSuccess;
 use Charcoal\Database\Events\Connection\ConnectionWaiting;
-use Charcoal\Database\Events\ConnectionEvent;
+use Charcoal\Database\Events\DbEvents;
 use Charcoal\Database\Exceptions\DbConnectionException;
 use Charcoal\Database\Exceptions\DbQueryException;
 use Charcoal\Database\Exceptions\DbTransactionException;
 
 /**
- * Class PdoAdapter
- * @package Charcoal\Database\Pdo
+ * Abstract class representing a PDO adapter for database interactions.
+ * Provides methods to manage database connections, transactions, and related tasks.
  */
 abstract class PdoAdapter
 {
     use ControlledSerializableTrait;
 
-    /** @var \PDO|null */
     protected ?\PDO $pdo = null;
+    public readonly DbEvents $events;
 
     /**
      * @param int $errorMode
@@ -35,6 +35,7 @@ abstract class PdoAdapter
      */
     public function __construct(protected readonly int $errorMode)
     {
+        $this->events = new DbEvents($this);
         $this->initialize();
     }
 
@@ -45,7 +46,7 @@ abstract class PdoAdapter
     private function initialize(): void
     {
         if ($this->credentials->strategy === DbConnectionStrategy::Lazy) {
-            ConnectionEvent::getEvent($this)->dispatch(new ConnectionWaiting($this->credentials));
+            $this->events->dispatch(new ConnectionWaiting($this->credentials));
             return;
         }
 
@@ -95,13 +96,11 @@ abstract class PdoAdapter
             $this->pdo = new \PDO($this->credentials->dsn(), $this->credentials->username,
                 $this->password ?? $this->credentials->password, $options);
         } catch (\Throwable $t) {
-            ConnectionEvent::getEvent($this)
-                ->dispatch(new ConnectionError($t));
+            $this->events->dispatch(new ConnectionError($t));
             throw new DbConnectionException("Failed to establish DB connection", previous: $t);
         }
 
-        ConnectionEvent::getEvent($this)
-            ->dispatch(new ConnectionSuccess($this->credentials, $this));
+        $this->events->dispatch(new ConnectionSuccess($this->credentials, $this));
         return $this;
     }
 

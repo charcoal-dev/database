@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * Part of the "charcoal-dev/database" package.
  * @link https://github.com/charcoal-dev/database
  */
@@ -9,10 +9,9 @@ declare(strict_types=1);
 namespace Charcoal\Database\Pdo;
 
 /**
- * Class PdoError
- * @package Charcoal\Database\Pdo
+ * Represents an error extracted from a PDO, PDOStatement, or PDOException instance.
  */
-readonly class PdoError implements \Stringable
+final readonly class PdoError
 {
     public ?string $sqlState;
     public int|string|null $code;
@@ -24,10 +23,5 @@ readonly class PdoError implements \Stringable
         $this->sqlState = $errorInfo[0] ?? null;
         $this->code = $errorInfo[1] ?? null;
         $this->info = $errorInfo[2] ?? null;
-    }
-
-    public function __toString(): string
-    {
-        return sprintf("[%s][%s] %s", $this->sqlState, $this->code, $this->info);
     }
 }
