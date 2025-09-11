@@ -113,7 +113,7 @@ class DatabaseClient extends PdoAdapter implements
     public function exec(string $query, array $data = []): ExecutedQuery
     {
         try {
-            return $this->isConnected()->queryExec($query, $data, false);
+            return $this->ensureConnection()->queryExec($query, $data, false);
         } catch (DbConnectionException $e) {
             throw new QueryExecuteException($query, $data, null, "Database connection failed", previous: $e);
         }
@@ -125,7 +125,7 @@ class DatabaseClient extends PdoAdapter implements
     public function fetch(string $query, array $data = []): FetchQuery
     {
         try {
-            return $this->isConnected()->queryExec($query, $data, true);
+            return $this->ensureConnection()->queryExec($query, $data, true);
         } catch (DbConnectionException $e) {
             throw new QueryExecuteException($query, $data, null, "Database connection failed", previous: $e);
         }

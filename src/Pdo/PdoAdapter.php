@@ -55,7 +55,7 @@ abstract class PdoAdapter
         }
 
         // Establish connection if not "Lazy" strategy
-        $this->isConnected();
+        $this->ensureConnection();
     }
 
     /**
@@ -96,7 +96,7 @@ abstract class PdoAdapter
      * @return $this
      * @throws DbConnectionException
      */
-    protected function isConnected(): static
+    protected function ensureConnection(): static
     {
         if (isset($this->pdo)) {
             return $this;
@@ -125,7 +125,7 @@ abstract class PdoAdapter
      */
     public function pdoAdapter(): \PDO
     {
-        return $this->isConnected()->pdo;
+        return $this->ensureConnection()->pdo;
     }
 
     /**
@@ -184,7 +184,7 @@ abstract class PdoAdapter
     public function beginTransaction(): void
     {
         try {
-            if (!$this->isConnected()->pdo->beginTransaction()) {
+            if (!$this->ensureConnection()->pdo->beginTransaction()) {
                 throw new DbTransactionException("Failed to begin database transaction");
             }
         } catch (DbConnectionException $e) {
