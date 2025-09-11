@@ -29,6 +29,7 @@ abstract readonly class SQLite3
 
         $db->pdoAdapter()->sqliteCreateFunction("REGEXP_LIKE",
             function (string $input, string $pattern, string $flags = ""): int {
+                $pattern = str_replace("''", "'", $pattern);
                 return preg_match("/" . $pattern . "/u" . $flags, $input) ? 1 : 0;
             }, 3);
     }
